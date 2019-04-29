@@ -416,8 +416,8 @@ def outputIndividual(mhits, mDNA, proteomes, morfsMerged,outputdir):
 	#		'tir', # tir
 	#		
 	#
-	fmtStrTitlePredictionNoSeq = '{:<30} {:<11} {:<59} {:>12} {:>12} {:>6} {:>8} {:>12} {:>12} {:>12} {:>12} {:>5} {:>4} {:>5} {:>5} {:>12} {:>12} {:>6} {:>7} {:>9} {:>2} {:<}'
-	fmtStrPredictionNoSeq = '{:<30} {:<11} {:<59} {:>12} {:>12} {:>6} {:>8} {:>12} {:>12} {:>12} {:>12} {:>5} {:>4} {:>5} {:>5} {:>12} {:>12} {:>6} {:>7} {:>9.2g} {:>2} {:<}'
+	fmtStrTitlePredictionNoSeq = '{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}'
+	fmtStrPredictionNoSeq = '{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}'
 
 	#print(fmtStrTitlePrediction.format(
 	# sort keys of dictionary
@@ -1961,7 +1961,7 @@ def addNonORFcopy(mispairs, mOrfHits):
 	mOrfHitsNew = {}
 	for seqid,orfhits in mOrfHits.items():
 		mOrfHitsNew[seqid] = orfhits
-		if len(copypairs[seqid]) == 0:
+		if len(copypairs.get(seqid,[])) == 0:
 			continue
 		for hit in copypairs[seqid]:
 			begin, end, strand = hit['sstart'], hit['send'], '+'
@@ -2535,7 +2535,6 @@ def pred(args):
 		file, org = item
 		filename = os.path.basename(file)
 
-		#fileid = filename.rsplit('.', 1)[0]
 		fileid = filename
 		fileids.append((fileid, org))
 
@@ -2543,12 +2542,11 @@ def pred(args):
 		# seq: (id, seq)
 		seqs = tools.getFasta(file)
 		if len(seqs) > 0 and len(seqs[0]) > 0:
-			#mDNA[seqs[0][0]] = (org, fileid, seqs[0][1])
-			for seq in seqs:
-				mDNA[seq[0]] = (org, fileid, seq[1])
+			for id,seq in seqs:
+				mDNA[id] = (org, fileid, seq)
 		else:
 			print('Warning: no sequence found in', file)
-	fileids.sort(key = operator.itemgetter(0))
+	fileids.sort(key = lambda x:x[0])
 
 	# Get hmmsearch hits and write the sorted hits into a file
 
@@ -2560,7 +2558,7 @@ def pred(args):
 	if len(tblout_list) == 0:
 		print('No results returned by HMM search was found for sequences in', args['dna_list'])
 		print('End in pred', datetime.datetime.now().ctime())
-		return 0
+		exit(0)
 
 	#print('Processing tblout files at', datetime.datetime.now().ctime())	
 	mtblout_hits_sorted = []
@@ -2696,7 +2694,7 @@ def pred(args):
 		print('Warning: no significant hit with E-value <= {} found for {}'.format(
 			e_value, ','.join(seqids)))
 		print('End in pred', datetime.datetime.now().ctime())
-		return 0
+		exit(0)
 
 	mtblout_hits_sorted = mtblout_hits_sorted_refined
 
@@ -2856,8 +2854,6 @@ def pred(args):
 		e = 'Error: cannot get organism name (directory name holding genome sequence FASTA file) and FASTA sequence file name!'
 		raise RuntimeError(e)
 
-	# Output predictions, mHits
-	#--------------------------
 
 	print('End in pred', datetime.datetime.now().ctime())
 
@@ -2878,11 +2874,12 @@ if __name__ == "__main__":
 
 	args = parser.parse_args()
 
-	args4pred = {
-			'dna_list': args.dna_list,
-			'path_to_proteome': args.path_to_proteome,
-			'path_to_hmmsearch_results': args.path_to_hmmsearch_results,
-			}
+	# args4pred = {
+	# 		'dna_list': args.dna_list,
+	# 		'path_to_proteome': args.path_to_proteome,
+	# 		'path_to_hmmsearch_results': args.path_to_hmmsearch_results,
+	# 		"odir":,
+	# 		}
 
-	pred(args4pred)
+	# pred(args4pred)
 

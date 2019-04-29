@@ -159,13 +159,6 @@ def phmmerSearch(args2concurrent4phmmer):
         nproc = nproteome
     else:
         nproc = constants.nproc
-    '''
-    if nproteome < constants.nthread:
-        nthread = nproteome
-    else:
-        nthread = constants.nthread
-    with concurrent.futures.ThreadPoolExecutor(max_workers = nthread) as executor:
-    '''
     with concurrent.futures.ProcessPoolExecutor(max_workers=nproc) as executor:
         for arg, outs in zip(args2concurrent4phmmer, executor.map(is_analysis.is_phmmer, args2concurrent4phmmer)):
             seqFile, proteome_file, hmmHitsFile = arg
@@ -179,16 +172,8 @@ def phmmerSearch(args2concurrent4phmmer):
 
 # dnaFiles: [(file, org), ..., (file, org)]
 def translateGenomeByFGS_v2(dnaFiles, dir2proteome):
-    # seq_type = '1'
-    # train_model = 'complete'
     seq_type = '0'
-    # train_model = 'sanger_5'
-    # train_model = 'sanger_10'
-    # train_model = '454_5'
-    # train_model = '454_10'
-    # train_model = '454_30'
     train_model = 'illumina_5'
-    # train_model = 'illumina_10'
 
     proteome_files = []
     args2concurrent = []
@@ -242,7 +227,7 @@ def proteinFromNCBI(dnaFiles, dir2proteome):
 
 
 # def isPredict(args):
-def isPredict(dna_list, path_to_proteome, path_to_hmmsearch_results,outputpath):
+def isPredict(dna_list, path_to_proteome, path_to_hmmsearch_results, outputpath):
     print('isPredict begins at', datetime.datetime.now().ctime())
 
     dnaFiles = tools.rdDNAlist(dna_list)
@@ -257,21 +242,26 @@ def isPredict(dna_list, path_to_proteome, path_to_hmmsearch_results,outputpath):
     # HMM searches against protein database
     #
     if os.path.isfile(clusterSeqFile4phmmer) and os.stat(clusterSeqFile4phmmer).st_size > 0:
+        # construct IO of command line
         args2concurrent4phmmer, outFiles4phmmer = prepare4phmmer(clusterSeqFile4phmmer,
                                                                  proteome_files,
                                                                  path_to_hmmsearch_results)
     else:  # no valid clusters.single.faa available
         args2concurrent4phmmer, outFiles4phmmer = [], []
+
     if len(args2concurrent4phmmer) > 0:
+        # really exec the commands line
         phmmerSearch(args2concurrent4phmmer)
 
     if os.path.isfile(hmms_file) and os.stat(hmms_file).st_size > 0:
+        # construct IO of command line
         args2concurrent4hmmsearch, outFiles4hmmsearch = prepare4hmmsearch(hmms_file,
                                                                           proteome_files,
                                                                           path_to_hmmsearch_results)
     else:  # no valid clusters.faa.hmm available
         args2concurrent4hmmsearch, outFiles4hmmsearch = [], []
     if len(args2concurrent4hmmsearch) > 0:
+        # really exec the commands line
         hmmSearch(args2concurrent4hmmsearch)
 
     # Select significant ones (predictions) from hits returned by HMM search
@@ -281,7 +271,7 @@ def isPredict(dna_list, path_to_proteome, path_to_hmmsearch_results,outputpath):
                      'path_to_proteome': path_to_proteome,
                      'path_to_hmmsearch_results': path_to_hmmsearch_results,
                      'hitsFile': hitsFile,
-                     "odir":outputpath
+                     "odir": outputpath
                      }
         pred.pred(args4pred)
         if constants.removeShortIS == False:
@@ -311,4 +301,4 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
     # isPredict(args)
-    isPredict(args.dna_list, args.path_to_proteome, args.path_to_hmmsearch_results)
+    # isPredict(args.dna_list, args.path_to_proteome, args.path_to_hmmsearch_results)

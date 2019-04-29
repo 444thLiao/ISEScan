@@ -6,57 +6,58 @@ version = '1.5.4'
 
 import argparse
 import os
+import textwrap
 
-import isPredict
 import constants
-def isPredictSingle(args):
-	seqfile = args['seqfile'].strip()
-	path2proteome = args['path2proteome']
-	path2hmm = args['path2hmm']
-	outputdir = args["odir"]
-	seqfilename = os.path.basename(seqfile)
-	org = os.path.basename(os.path.dirname(seqfile))
-	filelist = org + '_' + seqfilename + '.list'
-	with open(filelist, 'w') as fp:
-		fp.write(seqfile+'\n')
+import isPredict
 
-	isPredict.isPredict(filelist, path2proteome, path2hmm,outputdir)
-	os.remove(filelist)
+
+def isPredictSingle(args):
+    seqfile = args['seqfile'].strip()
+    path2proteome = args['path2proteome']
+    path2hmm = args['path2hmm']
+    outputdir = args["odir"]
+    seqfilename = os.path.basename(seqfile)
+    org = os.path.basename(os.path.dirname(seqfile))
+    filelist = org + '_' + seqfilename + '.list'
+    with open(filelist, 'w') as fp:
+        fp.write(seqfile + '\n')
+
+    isPredict.isPredict(filelist, path2proteome, path2hmm, outputdir)
+    os.remove(filelist)
+
 
 if __name__ == "__main__":
-	import textwrap
-
-	# Parse command line arguments
-	descriptStr = '''\
+    # Parse command line arguments
+    descriptStr = '''\
 			Search IS Profile HMMs against gene database. A typical invocation would be:
 			python3 isescan.py seqfile proteome hmm
 
 			- If you want isescan to report both complete and incomplete (partial) IS elements, you can change the output options (section "Option switch to report partial IS element") in constants.py.'''
-	parser = argparse.ArgumentParser(prog='isescan', description = textwrap.dedent(descriptStr), 
-			formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser = argparse.ArgumentParser(prog='isescan', description=textwrap.dedent(descriptStr),
+                                     formatter_class=argparse.RawDescriptionHelpFormatter)
 
-	parser.add_argument('--version', action='version', version='%(prog)s' + ' ' + version)
+    parser.add_argument('--version', action='version', version='%(prog)s' + ' ' + version)
 
+    helpStr = 'sequence file in fasta format'
+    parser.add_argument('seqfile', help=helpStr)
 
-	helpStr = 'sequence file in fasta format'
-	parser.add_argument('seqfile', help = helpStr)
+    helpStr = 'directory where proteome (each line corresponds to a protein sequence database translated from a genome) files will be placed'
+    parser.add_argument('path2proteome', help=helpStr)
 
-	helpStr = 'directory where proteome (each line corresponds to a protein sequence database translated from a genome) files will be placed'
-	parser.add_argument('path2proteome', help = helpStr)
+    helpStr = 'directory where the results of hmmsearch will be placed'
+    parser.add_argument('path2hmm', help=helpStr)
 
-	helpStr = 'directory where the results of hmmsearch will be placed'
-	parser.add_argument('path2hmm', help = helpStr)
+    helpStr = 'directory output'
+    parser.add_argument('-odir', '--outputdir', help=helpStr, default=constants.dir4prediction)
 
-	helpStr = 'directory output'
-	parser.add_argument('-odir','--outputdir', help = helpStr,default=constants.dir4prediction)
+    args = parser.parse_args()
 
-	args = parser.parse_args()
+    args4isPredictSingle = {
+        'seqfile': args.seqfile,
+        'path2proteome': args.path2proteome,
+        'path2hmm': args.path2hmm,
+        'odir': args.outputdir
+    }
 
-	args4isPredictSingle = {
-					'seqfile': args.seqfile,
-					'path2proteome': args.path2proteome,
-					'path2hmm': args.path2hmm,
-					'odir':args.outputdir
-				}
-
-	isPredictSingle(args4isPredictSingle)
+    isPredictSingle(args4isPredictSingle)
