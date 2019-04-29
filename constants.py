@@ -7,14 +7,14 @@ import os.path
 # 
 # FragGeneScan
 #FragGeneScan = '/u/zhiqxie/informatics/inst/FragGeneScan1.19/run_FragGeneScan.pl'
-FragGeneScan = '/u/zhiqxie/informatics/inst/FragGeneScan1.30/run_FragGeneScan.pl'
+FragGeneScan = '/home/liaoth/tools/FragGeneScan1.31/run_FragGeneScan.pl'
 # Hmmer
-phmmer = '/u/zhiqxie/informatics/inst/hmmer-3.1b2/bin/phmmer'
-hmmsearch = '/u/zhiqxie/informatics/inst/hmmer-3.1b2/bin/hmmsearch'
+phmmer = '/usr/local/bin/phmmer'
+hmmsearch = '/usr/local/bin/hmmsearch'
 # Blast 
-blastn = '/l/ncbi-blast/bin/blastn'
-blastp = '/l/ncbi-blast/bin/blastp'
-makeblastdb = '/l/ncbi-blast/bin/makeblastdb'
+blastn = '/usr/bin/blastn'
+blastp = '/usr/bin/blastp'
+makeblastdb = '/usr/bin/makeblastdb'
 
 # Set the path variables pointing to the profile HMM files (clusters.single.faa and clusters.faa.hmm).
 #
@@ -54,7 +54,7 @@ translateGenome = True
 #tmpdir = '/N/dc2/scratch/zhiqxie/insertion_sequence/tmpdir'
 
 # for local linux machine
-path2results = ''
+path2results = '/home/liaoth/Desktop/test'
 # for HPC system
 #path2results = '/N/dc2/scratch/zhiqxie/insertion_sequence/results4hmp'
 
@@ -363,8 +363,8 @@ gene2pepTable = {'11': table11}
 #nproc = 32
 #nproc = 16
 #nproc = 8
-nproc = 2
+nproc = 7
 # default number of threads to use in calculation if it is not given
-nthread = 4
+nthread = 7
 #nthread = 16
 #nthread = 32

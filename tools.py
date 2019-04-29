@@ -1602,7 +1602,7 @@ def sum4org4hmp(file4orgs, dir4prediction=constants.dir4prediction):
 				dnaLen = 0
 			else:
 				dnaLen = sum4is4all[5]
-			dnaType = 2 # chromosome DNA
+			dnaType = 2  # chromosome DNA
 
 			genome = 0
 			genome4is = 0
@@ -1767,11 +1767,11 @@ def output4sum(sum4is, outfile):
 #	or [nis, %genome, bps4is, dnaLen4is, familySum, dnaLen, ngenome4is, ngenome, nplasmid4is, nplasmid, nphage4is, nphage]
 # familySum: {family: [nis, %genome, bps4is, norg4is], ..., family: [nis, %genome, bps4is, norg4is]}
 def output4sumFull(sum4is, outfile):
-	fmt4title4families = ' {:>11} {:>13} {:>15} {:>13}'
-	fmt4families = ' {:>11} {:>13.2g} {:>15} {:>13}'
+	fmt4title4families = '\t{}\t{}\t{}\t{}'
+	fmt4families = '\t{}\t{}\t{}\t{}'
 	fp = open(outfile, 'w')
-	fmt4title = '{:<90} {:>6} {:>7} {:>15} {:>15} {:>15} {:>10} {:>7} {:>11} {:>8} {:>9} {:>6}'
-	fmt = '{:<90} {:>6} {:>7.2g} {:>15} {:>15} {:>15} {:>10} {:>7} {:>11} {:>8} {:>9} {:>6}' 
+	fmt4title = '{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}'
+	fmt = '{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}'
 
 	# print headline in table
 	fp.write(fmt4title.format(

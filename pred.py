@@ -393,7 +393,7 @@ def removeOverlappedHits(mhits):
 # isScore: {'evalue': score4evalue, 'tir': score4tir, 'dr': score4dr, 'occurence': score4occurence, 
 #		'score': isScore, 'ncopy4orf': ncopy4orf, 'ncopy4is': ncopy4is, 'irSim': irSim}
 #
-def outputIndividual(mhits, mDNA, proteomes, morfsMerged):
+def outputIndividual(mhits, mDNA, proteomes, morfsMerged,outputdir):
 	#fmtStrPrediction = '{:<30} # NCBI sequence ID
 	#		{:<11} # family
 	#		{:<59} # subgroup (cluster) ID
@@ -440,7 +440,7 @@ def outputIndividual(mhits, mDNA, proteomes, morfsMerged):
 			orfsMerged = set()
 
 
-		dir4output = os.path.join(constants.dir4prediction, org)
+		dir4output = os.path.join(outputdir, org)
 		tools.makedir(dir4output)
 		outFile = os.path.join(dir4output, '.'.join([fileid, 'out']))
 		sumFile = os.path.join(dir4output, '.'.join([fileid, 'sum']))
@@ -2519,6 +2519,7 @@ def outputHits(hits, outfile):
 	fp.close()
 
 def pred(args):
+	odir = args["odir"]
 	print('pred begins at', datetime.datetime.now().ctime())
 
 	fileids = []
@@ -2844,7 +2845,7 @@ def pred(args):
 		return 0
 
 	if norgfiles > 1:
-		outputIndividual(mHits, mDNA, proteomes, morfsMerged)
+		outputIndividual(mHits, mDNA, proteomes, morfsMerged,outputdir=odir)
 	elif norgfiles == 1:
 		# output ISs in all sequences into one file
 		if len(mHits) > 0:

@@ -8,18 +8,19 @@ import argparse
 import os
 
 import isPredict
-
+import constants
 def isPredictSingle(args):
 	seqfile = args['seqfile'].strip()
 	path2proteome = args['path2proteome']
 	path2hmm = args['path2hmm']
+	outputdir = args["odir"]
 	seqfilename = os.path.basename(seqfile)
 	org = os.path.basename(os.path.dirname(seqfile))
 	filelist = org + '_' + seqfilename + '.list'
 	with open(filelist, 'w') as fp:
 		fp.write(seqfile+'\n')
 
-	isPredict.isPredict(filelist, path2proteome, path2hmm)
+	isPredict.isPredict(filelist, path2proteome, path2hmm,outputdir)
 	os.remove(filelist)
 
 if __name__ == "__main__":
@@ -46,12 +47,16 @@ if __name__ == "__main__":
 	helpStr = 'directory where the results of hmmsearch will be placed'
 	parser.add_argument('path2hmm', help = helpStr)
 
+	helpStr = 'directory output'
+	parser.add_argument('-odir','--outputdir', help = helpStr,default=constants.dir4prediction)
+
 	args = parser.parse_args()
 
 	args4isPredictSingle = {
 					'seqfile': args.seqfile,
 					'path2proteome': args.path2proteome,
 					'path2hmm': args.path2hmm,
+					'odir':args.outputdir
 				}
 
 	isPredictSingle(args4isPredictSingle)

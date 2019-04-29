@@ -48,7 +48,13 @@ class Aligner(object):
     int_to_base = { 0:'A', 1:'C', 2:'G', 3:'T', 4:'N'}
 
     # Load the ssw library using ctypes
-    libssw = cdll.LoadLibrary('libssw.so')
+
+    import os
+    os.system("export LD_LIBRARY_PATH=%s" % os.path.abspath(os.path.dirname(__file__)))
+    try:
+        libssw = cdll.LoadLibrary('libssw.so')
+    except:
+        import pdb;pdb.set_trace()
 
     # Init and setup the functions pointer to map the one specified in the SSW lib
     # ssw_init method

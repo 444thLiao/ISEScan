@@ -11,13 +11,13 @@ import datetime
 import tools
 
 # To do IS element prediction before summarizing prediction if PREDICT = 1
-#PREDICT = 1
+PREDICT = 1
 # To summarize prediction based on the previous prediction to save time if PREDICT = 0
-PREDICT = 0
+# PREDICT = 0
 
-python3 = '/usr/local/bin/python3'
+python3 = '/usr/bin/python3'
 #cmd = 'isPredict.py'
-cmd = 'pred.py'
+cmd = '/home/liaoth/tools/ISEScan/pred.py'
 
 
 def batch(args):
