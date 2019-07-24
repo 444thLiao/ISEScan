@@ -18,12 +18,19 @@ def isPredictSingle(args):
     path2hmm = args['path2hmm']
     outputdir = args["odir"]
     seqfilename = os.path.basename(seqfile)
-    org = os.path.basename(os.path.dirname(seqfile))
+    if args["samplename"]:
+        org = args["samplename"]
+    else:
+        org = os.path.basename(os.path.dirname(seqfile))
     filelist = org + '_' + seqfilename + '.list'
     with open(filelist, 'w') as fp:
         fp.write(seqfile + '\n')
 
-    isPredict.isPredict(filelist, path2proteome, path2hmm, outputdir)
+    isPredict.isPredict(filelist, 
+                        path2proteome, 
+                        path2hmm, 
+                        org,
+                        outputdir)
     os.remove(filelist)
 
 
@@ -50,6 +57,7 @@ if __name__ == "__main__":
 
     helpStr = 'directory output'
     parser.add_argument('-odir', '--outputdir', help=helpStr, default=constants.dir4prediction)
+    parser.add_argument('-sn', '--samplename', help=helpStr, default='')
 
     args = parser.parse_args()
 
@@ -57,7 +65,8 @@ if __name__ == "__main__":
         'seqfile': args.seqfile,
         'path2proteome': args.path2proteome,
         'path2hmm': args.path2hmm,
-        'odir': args.outputdir
+        'odir': args.outputdir,
+        "samplename":args.samplename
     }
 
     isPredictSingle(args4isPredictSingle)

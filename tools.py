@@ -1520,7 +1520,7 @@ def qc4fna(seq, unknown='N'):
 
 
 # dnaFiles: [(file, org), ..., (file, org)]
-def rdDNAlist(dnaListFile):
+def rdDNAlist(dnaListFile,samplename=None):
     dnaFiles = []
     fp = open(dnaListFile, 'r')
     for line in fp:
@@ -1528,7 +1528,10 @@ def rdDNAlist(dnaListFile):
         if file == '' or file[0] == '#':
             continue
         dirs = os.path.dirname(file)
-        org = os.path.basename(dirs)
+        if samplename is not None:
+            org = samplename
+        else:
+            org = os.path.basename(dirs)
         dnaFiles.append((file, org))
     fp.close()
     return dnaFiles

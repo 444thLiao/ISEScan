@@ -687,7 +687,7 @@ def outputIndividual(mhits, mDNA, proteomes, morfsMerged,outputdir):
 # isType: 'c' or 'p'
 #
 # orgfileid: org/fileid, character string, e.g. HMASM/SRS078176.scaffolds.fa
-def outputIS4multipleSeqOneFile(mhits, mDNA, proteomes, morfsMerged, orgfileid):
+def outputIS4multipleSeqOneFile(mhits, mDNA, proteomes, morfsMerged,  orgfileid,outputdir):
 	fmt4seqID = '{:<60}' # NCBI sequence ID
 	fmt4family = '{:<11}' # family
 	fmt4cluster = '{:<59}' # subgroup (cluster) ID
@@ -829,20 +829,17 @@ def outputIS4multipleSeqOneFile(mhits, mDNA, proteomes, morfsMerged, orgfileid):
 	fmtPrediction4raw.append(fmt4evalue4copy)
 	fmtPrediction4raw.append(fmt4type)
 	fmtPrediction4raw.extend(fmtPrediction[-2:])
-	fmtStrPrediction = ' '.join(fmtPrediction)
-	fmtStrPrediction4raw = ' '.join(fmtPrediction4raw)
+	fmtStrPrediction = '\t'.join([_.strip(' ') for _ in fmtPrediction])
+	fmtStrPrediction4raw = '\t'.join([_.strip(' ') for _ in fmtPrediction4raw])
 
-	#fmtStrTitlePrediction = '{:<60} {:<11} {:<59} {:>12} {:>12} {:>6} {:>8} {:>12} {:>12} {:>12} {:>12} {:>5} {:>4} {:>5} {:>5} {:>12} {:>12} {:>6} {:>7} {:>9} {:>4} {:>2} {:<}'
-	#fmtStrPrediction      = '{:<60} {:<11} {:<59} {:>12} {:>12} {:>6} {:>8} {:>12} {:>12} {:>12} {:>12} {:>5} {:>4} {:>5} {:>5} {:>12} {:>12} {:>6} {:>7} {:>9.2g} {:>4} {:>2} {:<}'
+	fmtStrTitleSum = '{}\t{}\t{}\t{}\t{}\t{}'
+	fmtStrSum = '{}\t{}\t{}\t{}\t{}\t{}'
 
-	fmtStrTitleSum = '{:<60} {:<11} {:>6} {:>7} {:>15} {:>15}'
-	fmtStrSum = '{:<60} {:<11} {:>6} {:>7.2f} {:>15} {:>15}'
-
-	common4output = os.path.join(constants.dir4prediction, orgfileid)
+	common4output = os.path.join(outputdir, orgfileid)
 	outFile = '.'.join([common4output, 'out'])
 	outFile4raw = '.'.join([common4output, 'raw'])
 	sumFile = '.'.join([common4output, 'sum'])
-	gffFile =  '.'.join([common4output, 'gff'])
+	gffFile = '.'.join([common4output, 'gff'])
 
 	tools.makedir(os.path.dirname(outFile))
 
@@ -2529,7 +2526,7 @@ def pred(args):
 	#
 	# mDNA:	{seqid: (org, fileid, sequence), ..., seqid: (org, fileid, sequence)}
 	mDNA = {}
-	dnaFiles = tools.rdDNAlist(args['dna_list'])
+	dnaFiles = tools.rdDNAlist(args['dna_list'],args["samplename"])
 	
 	for item in dnaFiles:
 		file, org = item
@@ -2847,7 +2844,7 @@ def pred(args):
 	elif norgfiles == 1:
 		# output ISs in all sequences into one file
 		if len(mHits) > 0:
-			outputIS4multipleSeqOneFile(mHits, mDNA, proteomes, morfsMerged, orgfiles.pop())
+			outputIS4multipleSeqOneFile(mHits, mDNA, proteomes, morfsMerged, orgfiles.pop(),outputdir=odir)
 		else:
 			print('No IS element was found for {}'.format(mHits.keys()))
 	else:

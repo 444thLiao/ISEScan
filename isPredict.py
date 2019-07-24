@@ -21,15 +21,10 @@ def genome2proteome(args2concurrent):
     else:
         nproc = constants.nproc
 
-    '''
-    if nproteome < constants.nthread:
-        nthread = nproteome
-    else:
-        nthread = constants.nthread
-    with concurrent.futures.ThreadPoolExecutor(max_workers = nthread) as executor:
-    '''
     with concurrent.futures.ProcessPoolExecutor(max_workers=nproc) as executor:
-        for arg, outs in zip(args2concurrent, executor.map(is_analysis.translate_genome_dna_v3, args2concurrent)):
+        for arg, outs in zip(args2concurrent,
+                             executor.map(is_analysis.translate_genome_dna_v3,
+                                          args2concurrent)):
             dna_file = arg[0]
             if outs == 0:
                 print('Translating genome into proteome for', dna_file, ', return ', outs)
@@ -227,10 +222,14 @@ def proteinFromNCBI(dnaFiles, dir2proteome):
 
 
 # def isPredict(args):
-def isPredict(dna_list, path_to_proteome, path_to_hmmsearch_results, outputpath):
+def isPredict(dna_list, 
+              path_to_proteome, 
+              path_to_hmmsearch_results, 
+              samplename,
+              outputpath):
     print('isPredict begins at', datetime.datetime.now().ctime())
 
-    dnaFiles = tools.rdDNAlist(dna_list)
+    dnaFiles = tools.rdDNAlist(dna_list, samplename)
     if constants.translateGenome == True:
         proteome_files = translateGenomeByFGS_v2(dnaFiles, path_to_proteome)
     else:
@@ -271,7 +270,8 @@ def isPredict(dna_list, path_to_proteome, path_to_hmmsearch_results, outputpath)
                      'path_to_proteome': path_to_proteome,
                      'path_to_hmmsearch_results': path_to_hmmsearch_results,
                      'hitsFile': hitsFile,
-                     "odir": outputpath
+                     "odir": outputpath,
+                     "samplename": samplename
                      }
         pred.pred(args4pred)
         if constants.removeShortIS == False:

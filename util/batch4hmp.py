@@ -4,13 +4,10 @@
 import argparse
 import datetime
 import os
-from os.path import dirname
+import sys
+sys.path.insert(0,os.path.dirname(os.path.dirname(__file__)))
 import isPredict
 import tools
-
-python3 = 'python3'
-cmd = os.path.abspath(os.path.join(dirname(dirname(__file__)), 'isescan.py'))
-
 
 def batch(args):
     dnaListFile4orgs = args['fileList']
@@ -32,18 +29,21 @@ def batch(args):
 
     dir2proteome = os.path.join(dir4prediction, 'proteome')
     dir2hmmsearchResults = os.path.join(dir4prediction, 'hmm')
-    isPredict.isPredict(dnaListFile4orgs, dir2proteome, dir2hmmsearchResults, dir4prediction)
+
     # summarize IS elements in each genome DNA and each organism
+    for org, files in file4orgs.items():
+        for file in files:
+            seqfilename = os.path.basename(file)
+            filelist = org + '_' + seqfilename + '.list'
+            with open(filelist, 'w') as fp:
+                fp.write(file + '\n')
+            isPredict.isPredict(filelist, dir2proteome, dir2hmmsearchResults, dir4prediction)
+            os.remove(filelist)
 
     # get summarization of IS elements for each organism and write summarization
-    # write 'organism.sum' in each organism directory
+    # write '%s.sum' % org in each organism directory
     tools.sum4org4hmp(file4orgs, dir4prediction=dir4prediction)
     # prepare and write 'is.sum' in current directory
-    sum4is = {}
-    for org in file4orgs.keys():
-        sumFileByOrg = os.path.join(dir4prediction, '%s.sum' % org)
-        if os.path.isfile(sumFileByOrg) and os.stat(sumFileByOrg).st_size > 0:
-            sum4is[org] = tools.getSumFull(sumFileByOrg, org)
 
     print('Batch running finishes at', datetime.datetime.now().ctime())
 
