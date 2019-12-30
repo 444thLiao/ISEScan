@@ -1524,7 +1524,7 @@ def translate_genome_dna_v3(args):
 	#./run_FragGeneScan.pl -genome=./example/NC_000913.fna -out=./example/NC_000913.test  -complete=1  -train=complete -thread==4
 
 	gene_translate_cmd = constants.FragGeneScan
-	input = "-genome=" + dna
+	input = """-genome="%s" """ % dna
 	output = "-out=" + output_file
 	seq_type = "-complete=" + seq_type
 	train_model = "-train=" + train_model

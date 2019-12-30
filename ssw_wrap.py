@@ -12,7 +12,9 @@ library and update the cache by using /sbin/ldconfig as root
 #~~~~~~~GLOBAL IMPORTS~~~~~~~#
 # Standard library packages
 from ctypes import *
-
+import os
+libssw_path = os.path.join(os.path.abspath(os.path.dirname(__file__)),
+                                               'libssw.so')
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 class CAlignRes(Structure):
     """
@@ -48,7 +50,11 @@ class Aligner(object):
     int_to_base = { 0:'A', 1:'C', 2:'G', 3:'T', 4:'N'}
 
     # Load the ssw library using ctypes
-    libssw = cdll.LoadLibrary('libssw.so')
+    import os
+    try:
+        libssw = cdll.LoadLibrary(libssw_path)
+    except:
+        import pdb;pdb.set_trace()
 
     # Init and setup the functions pointer to map the one specified in the SSW lib
     # ssw_init method
@@ -268,7 +274,7 @@ class PyAlignRes(object):
     #~~~~~~~CLASS VARIABLES~~~~~~~#
 
     # Load the ssw library using ctypes
-    libssw = cdll.LoadLibrary('libssw.so')
+    libssw = cdll.LoadLibrary(libssw_path)
 
     # Init and setup the functions pointer to map the one specified in the SSW lib
     # cigar_int_to_len function

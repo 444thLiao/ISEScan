@@ -4,27 +4,24 @@ import os.path
 #
 # Set the path variables pointing to the required packages in order that ISEScan can find the required packages
 # on your computer.
-# 
+#
 # FragGeneScan
-#FragGeneScan = '/u/zhiqxie/informatics/inst/FragGeneScan1.19/run_FragGeneScan.pl'
-FragGeneScan = '/u/zhiqxie/informatics/inst/FragGeneScan1.30/run_FragGeneScan.pl'
+FragGeneScan = '/home/liaoth/tools/FragGeneScan1.31/run_FragGeneScan.pl'
 # Hmmer
-phmmer = '/u/zhiqxie/informatics/inst/hmmer-3.1b2/bin/phmmer'
-hmmsearch = '/u/zhiqxie/informatics/inst/hmmer-3.1b2/bin/hmmsearch'
+phmmer = '/usr/local/bin/phmmer'
+hmmsearch = '/usr/local/bin/hmmsearch'
 # Blast 
-blastn = '/l/ncbi-blast/bin/blastn'
-blastp = '/l/ncbi-blast/bin/blastp'
-makeblastdb = '/l/ncbi-blast/bin/makeblastdb'
+blastn = '/usr/bin/blastn'
+blastp = '/usr/bin/blastp'
+makeblastdb = '/usr/bin/makeblastdb'
 
 # Set the path variables pointing to the profile HMM files (clusters.single.faa and clusters.faa.hmm).
-#
+isescan_dir = os.path.dirname(__file__)
 # The peptide sequences of single-member clusters, which is used by phmmer in hmmer
-file4clusterSeqFile4phmmer = 'pHMMs/clusters.single.faa'
-#file4clusterSeqFile4phmmer = '/N/u/zhiqxie/Karst/is/isescan/clusters.single.faa'
+file4clusterSeqFile4phmmer = os.path.join(isescan_dir,'pHMMs/clusters.single.faa')
 # The profile HMMs of multiple-member clusters, which is used by hmmsearch in hmmer
-file4clusterHMM = 'pHMMs/clusters.faa.hmm'
-#file4clusterHMM = '/N/u/zhiqxie/Karst/is/isescan/clusters.faa.hmm'
-#
+file4clusterHMM = os.path.join(isescan_dir,'pHMMs/clusters.faa.hmm')
+
 ## Config packages
 
 
@@ -50,11 +47,9 @@ translateGenome = True
 
 # set temporary directory used by ISEScan
 #tmpdir = 'tmpdir'
-#tmpdir = '/N/u/zhiqxie/Karst/is/isescan/tmpdir'
-#tmpdir = '/N/dc2/scratch/zhiqxie/insertion_sequence/tmpdir'
 
 # for local linux machine
-path2results = ''
+path2results = '/home/liaoth/Desktop/test'
 # for HPC system
 #path2results = '/N/dc2/scratch/zhiqxie/insertion_sequence/results4hmp'
 
@@ -360,11 +355,7 @@ table11 = {
 gene2pepTable = {'11': table11}
 
 # default number of processes to use in calculation if it is not given
-#nproc = 32
-#nproc = 16
-#nproc = 8
-nproc = 2
+nproc = 7
 # default number of threads to use in calculation if it is not given
-nthread = 4
-#nthread = 16
-#nthread = 32
+nthread = 7
+

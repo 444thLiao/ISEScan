@@ -393,7 +393,7 @@ def removeOverlappedHits(mhits):
 # isScore: {'evalue': score4evalue, 'tir': score4tir, 'dr': score4dr, 'occurence': score4occurence, 
 #		'score': isScore, 'ncopy4orf': ncopy4orf, 'ncopy4is': ncopy4is, 'irSim': irSim}
 #
-def outputIndividual(mhits, mDNA, proteomes, morfsMerged):
+def outputIndividual(mhits, mDNA, proteomes, morfsMerged,outputdir):
 	#fmtStrPrediction = '{:<30} # NCBI sequence ID
 	#		{:<11} # family
 	#		{:<59} # subgroup (cluster) ID
@@ -416,8 +416,8 @@ def outputIndividual(mhits, mDNA, proteomes, morfsMerged):
 	#		'tir', # tir
 	#		
 	#
-	fmtStrTitlePredictionNoSeq = '{:<30} {:<11} {:<59} {:>12} {:>12} {:>6} {:>8} {:>12} {:>12} {:>12} {:>12} {:>5} {:>4} {:>5} {:>5} {:>12} {:>12} {:>6} {:>7} {:>9} {:>2} {:<}'
-	fmtStrPredictionNoSeq = '{:<30} {:<11} {:<59} {:>12} {:>12} {:>6} {:>8} {:>12} {:>12} {:>12} {:>12} {:>5} {:>4} {:>5} {:>5} {:>12} {:>12} {:>6} {:>7} {:>9.2g} {:>2} {:<}'
+	fmtStrTitlePredictionNoSeq = '{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}'
+	fmtStrPredictionNoSeq = '{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}'
 
 	#print(fmtStrTitlePrediction.format(
 	# sort keys of dictionary
@@ -440,7 +440,7 @@ def outputIndividual(mhits, mDNA, proteomes, morfsMerged):
 			orfsMerged = set()
 
 
-		dir4output = os.path.join(constants.dir4prediction, org)
+		dir4output = os.path.join(outputdir, org)
 		tools.makedir(dir4output)
 		outFile = os.path.join(dir4output, '.'.join([fileid, 'out']))
 		sumFile = os.path.join(dir4output, '.'.join([fileid, 'sum']))
@@ -687,7 +687,7 @@ def outputIndividual(mhits, mDNA, proteomes, morfsMerged):
 # isType: 'c' or 'p'
 #
 # orgfileid: org/fileid, character string, e.g. HMASM/SRS078176.scaffolds.fa
-def outputIS4multipleSeqOneFile(mhits, mDNA, proteomes, morfsMerged, orgfileid):
+def outputIS4multipleSeqOneFile(mhits, mDNA, proteomes, morfsMerged,  orgfileid,outputdir):
 	fmt4seqID = '{:<60}' # NCBI sequence ID
 	fmt4family = '{:<11}' # family
 	fmt4cluster = '{:<59}' # subgroup (cluster) ID
@@ -829,20 +829,17 @@ def outputIS4multipleSeqOneFile(mhits, mDNA, proteomes, morfsMerged, orgfileid):
 	fmtPrediction4raw.append(fmt4evalue4copy)
 	fmtPrediction4raw.append(fmt4type)
 	fmtPrediction4raw.extend(fmtPrediction[-2:])
-	fmtStrPrediction = ' '.join(fmtPrediction)
-	fmtStrPrediction4raw = ' '.join(fmtPrediction4raw)
+	fmtStrPrediction = '\t'.join([_.strip(' ') for _ in fmtPrediction])
+	fmtStrPrediction4raw = '\t'.join([_.strip(' ') for _ in fmtPrediction4raw])
 
-	#fmtStrTitlePrediction = '{:<60} {:<11} {:<59} {:>12} {:>12} {:>6} {:>8} {:>12} {:>12} {:>12} {:>12} {:>5} {:>4} {:>5} {:>5} {:>12} {:>12} {:>6} {:>7} {:>9} {:>4} {:>2} {:<}'
-	#fmtStrPrediction      = '{:<60} {:<11} {:<59} {:>12} {:>12} {:>6} {:>8} {:>12} {:>12} {:>12} {:>12} {:>5} {:>4} {:>5} {:>5} {:>12} {:>12} {:>6} {:>7} {:>9.2g} {:>4} {:>2} {:<}'
+	fmtStrTitleSum = '{}\t{}\t{}\t{}\t{}\t{}'
+	fmtStrSum = '{}\t{}\t{}\t{}\t{}\t{}'
 
-	fmtStrTitleSum = '{:<60} {:<11} {:>6} {:>7} {:>15} {:>15}'
-	fmtStrSum = '{:<60} {:<11} {:>6} {:>7.2f} {:>15} {:>15}'
-
-	common4output = os.path.join(constants.dir4prediction, orgfileid)
+	common4output = os.path.join(outputdir, orgfileid)
 	outFile = '.'.join([common4output, 'out'])
 	outFile4raw = '.'.join([common4output, 'raw'])
 	sumFile = '.'.join([common4output, 'sum'])
-	gffFile =  '.'.join([common4output, 'gff'])
+	gffFile = '.'.join([common4output, 'gff'])
 
 	tools.makedir(os.path.dirname(outFile))
 
@@ -1961,7 +1958,7 @@ def addNonORFcopy(mispairs, mOrfHits):
 	mOrfHitsNew = {}
 	for seqid,orfhits in mOrfHits.items():
 		mOrfHitsNew[seqid] = orfhits
-		if len(copypairs[seqid]) == 0:
+		if len(copypairs.get(seqid,[])) == 0:
 			continue
 		for hit in copypairs[seqid]:
 			begin, end, strand = hit['sstart'], hit['send'], '+'
@@ -2519,6 +2516,7 @@ def outputHits(hits, outfile):
 	fp.close()
 
 def pred(args):
+	odir = args["odir"]
 	print('pred begins at', datetime.datetime.now().ctime())
 
 	fileids = []
@@ -2528,13 +2526,12 @@ def pred(args):
 	#
 	# mDNA:	{seqid: (org, fileid, sequence), ..., seqid: (org, fileid, sequence)}
 	mDNA = {}
-	dnaFiles = tools.rdDNAlist(args['dna_list'])
+	dnaFiles = tools.rdDNAlist(args['dna_list'],args["samplename"])
 	
 	for item in dnaFiles:
 		file, org = item
 		filename = os.path.basename(file)
 
-		#fileid = filename.rsplit('.', 1)[0]
 		fileid = filename
 		fileids.append((fileid, org))
 
@@ -2542,12 +2539,11 @@ def pred(args):
 		# seq: (id, seq)
 		seqs = tools.getFasta(file)
 		if len(seqs) > 0 and len(seqs[0]) > 0:
-			#mDNA[seqs[0][0]] = (org, fileid, seqs[0][1])
-			for seq in seqs:
-				mDNA[seq[0]] = (org, fileid, seq[1])
+			for id,seq in seqs:
+				mDNA[id] = (org, fileid, seq)
 		else:
 			print('Warning: no sequence found in', file)
-	fileids.sort(key = operator.itemgetter(0))
+	fileids.sort(key = lambda x:x[0])
 
 	# Get hmmsearch hits and write the sorted hits into a file
 
@@ -2559,7 +2555,7 @@ def pred(args):
 	if len(tblout_list) == 0:
 		print('No results returned by HMM search was found for sequences in', args['dna_list'])
 		print('End in pred', datetime.datetime.now().ctime())
-		return 0
+		exit(0)
 
 	#print('Processing tblout files at', datetime.datetime.now().ctime())	
 	mtblout_hits_sorted = []
@@ -2695,7 +2691,7 @@ def pred(args):
 		print('Warning: no significant hit with E-value <= {} found for {}'.format(
 			e_value, ','.join(seqids)))
 		print('End in pred', datetime.datetime.now().ctime())
-		return 0
+		exit(0)
 
 	mtblout_hits_sorted = mtblout_hits_sorted_refined
 
@@ -2844,19 +2840,17 @@ def pred(args):
 		return 0
 
 	if norgfiles > 1:
-		outputIndividual(mHits, mDNA, proteomes, morfsMerged)
+		outputIndividual(mHits, mDNA, proteomes, morfsMerged,outputdir=odir)
 	elif norgfiles == 1:
 		# output ISs in all sequences into one file
 		if len(mHits) > 0:
-			outputIS4multipleSeqOneFile(mHits, mDNA, proteomes, morfsMerged, orgfiles.pop())
+			outputIS4multipleSeqOneFile(mHits, mDNA, proteomes, morfsMerged, orgfiles.pop(),outputdir=odir)
 		else:
 			print('No IS element was found for {}'.format(mHits.keys()))
 	else:
 		e = 'Error: cannot get organism name (directory name holding genome sequence FASTA file) and FASTA sequence file name!'
 		raise RuntimeError(e)
 
-	# Output predictions, mHits
-	#--------------------------
 
 	print('End in pred', datetime.datetime.now().ctime())
 
@@ -2877,11 +2871,12 @@ if __name__ == "__main__":
 
 	args = parser.parse_args()
 
-	args4pred = {
-			'dna_list': args.dna_list,
-			'path_to_proteome': args.path_to_proteome,
-			'path_to_hmmsearch_results': args.path_to_hmmsearch_results,
-			}
+	# args4pred = {
+	# 		'dna_list': args.dna_list,
+	# 		'path_to_proteome': args.path_to_proteome,
+	# 		'path_to_hmmsearch_results': args.path_to_hmmsearch_results,
+	# 		"odir":,
+	# 		}
 
-	pred(args4pred)
+	# pred(args4pred)
 
